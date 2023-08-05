@@ -53,22 +53,25 @@ export class Order extends Item<OrderProps> {
         this.props.updatedAt = new Date();
     }
 
-    static create(
-        props: Optional<OrderProps, 'createdAt'>,
-        pk: string,
-        sk: string,
-    ) {
-        const order = new Order(
-            {
-                ...props,
-                id: props.data.id ?? randomUUID(),
-                status: props.data.status ?? OrderStatus.PENDING,
-                updatedAt: props.updatedAt ?? new Date(),
-                createdAt: props.createdAt ?? new Date(),
-            },
-            pk,
-            sk,
-        );
+    toDynamoItem(): Record<string, unknown> {
+        const { sk, pk } = this.keys();
+        return {
+            PK: { S: pk },
+            SK: { S: sk },
+            data: { S: JSON.stringify(this.props.data) },
+            createdAt: { S: this.props.createdAt?.toISOString() },
+            updatedAt: { S: this.props.updatedAt?.toISOString() },
+        };
+    }
+
+    static create(props: Optional<OrderProps, 'createdAt'>) {
+        const order = new Order({
+            ...props,
+            id: props.data.id ?? randomUUID(),
+            status: props.data.status ?? OrderStatus.PENDING,
+            updatedAt: props.updatedAt ?? new Date(),
+            createdAt: props.createdAt ?? new Date(),
+        });
 
         return order;
     }

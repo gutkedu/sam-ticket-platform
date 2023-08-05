@@ -14,24 +14,20 @@ describe('GetCostumer', () => {
     });
 
     it('should get a existing costumer by email', async () => {
-        const costumer = makeCostumer(
-            {
-                data: {
-                    id: 1,
-                    email: 'jondoe@email.com',
-                },
+        const newCostumer = makeCostumer({
+            data: {
+                id: 1,
+                email: 'jondoe@email.com',
             },
-            'COSTUMER#1',
-            'COSTUMER#1',
-        );
+        });
 
-        await costumersRepository.create(costumer);
+        await costumersRepository.create(newCostumer);
 
-        const findCostumer = await sut.execute({
+        const { costumer } = await sut.execute({
             email: 'jondoe@email.com',
         });
 
-        expect(findCostumer.costumer).toEqual(costumer);
+        expect(costumer).toEqual(newCostumer);
     });
 
     it('should throw an error if costumer is not found', async () => {

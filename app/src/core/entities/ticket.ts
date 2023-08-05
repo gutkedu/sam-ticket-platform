@@ -81,17 +81,24 @@ export class Ticket extends Item<TicketProps> {
         this.props.updatedAt = new Date();
     }
 
-    static create(props: TicketProps, pk: string, sk: string) {
-        const ticket = new Ticket(
-            {
-                ...props,
-                id: props.data.id ?? randomUUID(),
-                createdAt: props.createdAt ?? new Date(),
-                updatedAt: props.updatedAt ?? new Date(),
-            },
-            pk,
-            sk,
-        );
+    toDynamoItem(): Record<string, unknown> {
+        const { sk, pk } = this.keys();
+        return {
+            PK: { S: pk },
+            SK: { S: sk },
+            data: { S: JSON.stringify(this.props.data) },
+            createdAt: { S: this.props.createdAt?.toISOString() },
+            updatedAt: { S: this.props.updatedAt?.toISOString() },
+        };
+    }
+
+    static create(props: TicketProps) {
+        const ticket = new Ticket({
+            ...props,
+            id: props.data.id ?? randomUUID(),
+            createdAt: props.createdAt ?? new Date(),
+            updatedAt: props.updatedAt ?? new Date(),
+        });
         return ticket;
     }
 }

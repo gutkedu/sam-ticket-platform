@@ -71,19 +71,26 @@ export class Costumer extends Item<CostumerProps> {
         this.props.updatedAt = new Date();
     }
 
-    static create(props: CostumerProps, pk: string, sk: string) {
-        const costumer = new Costumer(
-            {
-                data: {
-                    ...props.data,
-                    id: props.data.id ?? randomUUID(),
-                },
-                createdAt: props.createdAt ?? new Date(),
-                updatedAt: props.updatedAt ?? new Date(),
+    toDynamoItem(): Record<string, unknown> {
+        const { sk, pk } = this.keys();
+        return {
+            PK: { S: pk },
+            SK: { S: sk },
+            data: { S: JSON.stringify(this.props.data) },
+            createdAt: { S: this.props.createdAt?.toISOString() },
+            updatedAt: { S: this.props.updatedAt?.toISOString() },
+        };
+    }
+
+    static create(props: CostumerProps) {
+        const costumer = new Costumer({
+            data: {
+                ...props.data,
+                id: props.data.id ?? randomUUID(),
             },
-            pk,
-            sk,
-        );
+            createdAt: props.createdAt ?? new Date(),
+            updatedAt: props.updatedAt ?? new Date(),
+        });
 
         return costumer;
     }
