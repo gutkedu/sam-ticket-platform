@@ -2,62 +2,68 @@ import { randomUUID } from 'crypto';
 import { Item } from './base';
 
 export interface CostumerProps {
-    id?: string;
-    email: string;
-    name: string;
-    phone: string;
-    password: string;
-    photoPath: string | null;
+    data: {
+        id?: string;
+        email: string;
+        name: string;
+        phone: string;
+        password: string;
+        photoPath: string | null;
+    };
     createdAt?: Date;
     updatedAt?: Date;
 }
 
 export class Costumer extends Item<CostumerProps> {
     get pk() {
-        return `COSTUMER#${this.props.email}`;
+        return `COSTUMER#${this.props.data.email}`;
     }
 
     get sk() {
-        return `COSTUMER#${this.props.email}`;
+        return `COSTUMER#${this.props.data.email}`;
     }
 
     get id() {
-        return this.props.id;
+        return this.props.data.id;
     }
 
     get email() {
-        return this.props.email;
+        return this.props.data.email;
     }
 
     get name() {
-        return this.props.name;
+        return this.props.data.name;
     }
 
     set name(name: string) {
-        this.props.name = name;
+        this.props.data.name = name;
         this.touch();
     }
 
     get phone() {
-        return this.props.phone;
+        return this.props.data.phone;
     }
 
     set phone(phone: string) {
-        this.props.phone = phone;
+        this.props.data.phone = phone;
         this.touch();
     }
 
+    get password() {
+        return this.props.data.password;
+    }
+
     set password(password: string) {
-        this.props.password = password;
+        this.props.data.password = password;
         this.touch();
     }
 
     get photoPath() {
-        return this.props.photoPath;
+        return this.props.data.photoPath;
     }
 
     set photoPath(photoPath: string | null) {
-        this.props.photoPath = photoPath;
+        this.props.data.photoPath = photoPath;
         this.touch();
     }
 
@@ -70,12 +76,7 @@ export class Costumer extends Item<CostumerProps> {
         return {
             PK: { S: pk },
             SK: { S: sk },
-            id: { S: this.props.id },
-            email: { S: this.props.email },
-            name: { S: this.props.name },
-            phone: { S: this.props.phone },
-            password: { S: this.props.password },
-            photoPath: { S: this.props.photoPath ?? '' },
+            data: { S: JSON.stringify(this.props.data) },
             createdAt: { S: this.props.createdAt?.toISOString() },
             updatedAt: { S: this.props.updatedAt?.toISOString() },
         };
@@ -83,8 +84,10 @@ export class Costumer extends Item<CostumerProps> {
 
     static create(props: CostumerProps) {
         const costumer = new Costumer({
-            ...props,
-            id: props.id ?? randomUUID(),
+            data: {
+                ...props.data,
+                id: props.data.id ?? randomUUID(),
+            },
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date(),
         });

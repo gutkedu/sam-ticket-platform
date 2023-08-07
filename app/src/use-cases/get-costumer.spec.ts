@@ -15,8 +15,10 @@ describe('GetCostumer', () => {
 
     it('should get a existing costumer by email', async () => {
         const newCostumer = makeCostumer({
-            id: 1,
-            email: 'jondoe@email.com',
+            data: {
+                id: 1,
+                email: 'jondoe@email.com',
+            },
         });
 
         await costumersRepository.create(newCostumer);

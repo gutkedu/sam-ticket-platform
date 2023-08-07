@@ -33,11 +33,13 @@ export class CreateCostumerUseCase {
         const passwordHash = await hash(password, 6);
 
         const costumer = Costumer.create({
-            email,
-            name,
-            phone,
-            password: passwordHash,
-            photoPath,
+            data: {
+                email,
+                name,
+                phone,
+                password: passwordHash,
+                photoPath,
+            },
         });
 
         await this.costumerRepository.create(costumer);
