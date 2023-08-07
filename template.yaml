@@ -33,6 +33,7 @@ Resources:
         Sourcemap: true
         EntryPoints:
         - src/http/lambdas/hello-world/app.ts
+
   CreateCostumerFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -41,8 +42,16 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
       - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TicketPlatformTable
+          REGION: !Ref AWS::Region
+      Policies:
+       - AWSLambdaExecute
+       - DynamoDBCrudPolicy:
+          TableName: !Ref TicketPlatformTable
       Events:
-        HelloWorld:
+        CreateCostumer:
           Type: Api
           Properties:
             Path: /costumer
@@ -55,6 +64,8 @@ Resources:
         Sourcemap: true
         EntryPoints:
         - src/http/lambdas/costumer/create.ts
+        External:
+          - '@aws-sdk/client-dynamodb'
   GetCostumerFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -63,8 +74,16 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
       - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TicketPlatformTable
+          REGION: !Ref AWS::Region
+      Policies:
+       - AWSLambdaExecute
+       - DynamoDBCrudPolicy:
+          TableName: !Ref TicketPlatformTable
       Events:
-        HelloWorld:
+        GetCostumer:
           Type: Api
           Properties:
             Path: /costumer
@@ -77,6 +96,24 @@ Resources:
         Sourcemap: true
         EntryPoints:
         - src/http/lambdas/costumer/get.ts
+        External:
+          - '@aws-sdk/client-dynamodb'
+
+  TicketPlatformTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: 'TicketPlatformTable'
+      KeySchema:
+        - AttributeName: 'pk'
+          KeyType: 'HASH'
+        - AttributeName: 'sk'
+          KeyType: 'RANGE'
+      AttributeDefinitions:
+        - AttributeName: 'pk'
+          AttributeType: 'S'
+        - AttributeName: 'sk'
+          AttributeType: 'S'
+      BillingMode: 'PAY_PER_REQUEST'
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -94,5 +131,5 @@ Resources:
 Outputs:
   Api:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
 

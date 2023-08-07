@@ -1,8 +1,8 @@
 import { CreateCostumerUseCase } from 'use-cases/create-costumer';
-import { InMemoryCostumersRepository } from '../../../test/repositories/in-memory-costumers-repository';
+import { DynamoCostumersRepository } from 'repositories/dynamodb/dynamo-costumers-repository';
 
 export function makeCreateCostumerUseCase() {
-    const costumersRepository = new InMemoryCostumersRepository();
+    const costumersRepository = new DynamoCostumersRepository();
     const createCostumerUseCase = new CreateCostumerUseCase(
         costumersRepository,
     );

@@ -10,10 +10,12 @@ export async function getCostumerHandler(
         email: z.string().email(),
     });
 
+    const emailQuery = event.queryStringParameters?.email as string;
+
     try {
-        const { email } = getCostumerBodySchema.parse(
-            event.queryStringParameters,
-        );
+        const { email } = getCostumerBodySchema.parse({
+            email: emailQuery,
+        });
 
         const getCostumerUseCase = makeGetCostumerUseCase();
 

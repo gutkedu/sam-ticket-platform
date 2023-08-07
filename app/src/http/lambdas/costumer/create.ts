@@ -8,15 +8,14 @@ export async function createCostumerHandler(
 ): Promise<APIGatewayProxyResult> {
     const createCostumerBodySchema = z.object({
         email: z.string().email(),
-        name: z.string().nonempty({ message: 'Name is required' }),
+        name: z.string(),
         phone: z.string(),
-        password: z.string().min(8).max(20),
         photoPath: z.string().nullable(),
     });
 
     try {
-        const { email, name, phone, password, photoPath } =
-            createCostumerBodySchema.parse(event.body);
+        const { email, name, phone, photoPath } =
+            createCostumerBodySchema.parse(JSON.parse(event.body as string));
 
         const createCostumerUseCase = makeCreateCostumerUseCase();
 
@@ -24,7 +23,6 @@ export async function createCostumerHandler(
             email,
             name,
             phone,
-            password,
             photoPath,
         });
 

@@ -6,7 +6,6 @@ export function makeCostumer(override: Partial<CostumerProps> = {}) {
             name: faker.person.fullName(),
             email: faker.internet.email(),
             phone: faker.phone.number(),
-            password: faker.internet.password(),
             photoPath: faker.system.filePath(),
             ...override.data,
         },

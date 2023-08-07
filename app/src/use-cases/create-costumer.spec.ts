@@ -16,7 +16,6 @@ describe('CreateCostumer', () => {
             email: 'any_email',
             name: 'any_name',
             phone: 'any_phone',
-            password: 'any_password',
             photoPath: 'any_photoPath',
         });
 

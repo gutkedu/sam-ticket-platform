@@ -8,10 +8,7 @@ export class InMemoryCostumersRepository implements CostumersRepository {
         this.items.push(costumer);
         return costumer;
     }
-    async findById(id: string): Promise<Costumer | null> {
-        const costumer = this.items.find((item) => item.id === id);
-        return costumer ?? null;
-    }
+
     async findByEmail(email: string): Promise<Costumer | null> {
         const costumer = this.items.find((item) => item.email === email);
         return costumer ?? null;

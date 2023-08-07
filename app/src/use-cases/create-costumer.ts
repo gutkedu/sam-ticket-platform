@@ -1,12 +1,10 @@
 import { Costumer } from 'core/entities/costumer';
 import { CostumersRepository } from 'repositories/costumers-repository';
-import { hash } from 'bcryptjs';
 
 interface CreateCostumerRequest {
     email: string;
     name: string;
     phone: string;
-    password: string;
     photoPath: string | null;
 }
 
@@ -21,7 +19,6 @@ export class CreateCostumerUseCase {
         email,
         name,
         phone,
-        password,
         photoPath,
     }: CreateCostumerRequest): Promise<CreateCostumerResponse> {
         const costumerExist = await this.costumerRepository.findByEmail(email);
@@ -30,14 +27,11 @@ export class CreateCostumerUseCase {
             throw new Error('Costumer already exists');
         }
 
-        const passwordHash = await hash(password, 6);
-
         const costumer = Costumer.create({
             data: {
                 email,
                 name,
                 phone,
-                password: passwordHash,
                 photoPath,
             },
         });

@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { Item } from './base';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 
 export interface CostumerProps {
     data: {
@@ -7,7 +8,6 @@ export interface CostumerProps {
         email: string;
         name: string;
         phone: string;
-        password: string;
         photoPath: string | null;
     };
     createdAt?: Date;
@@ -49,15 +49,6 @@ export class Costumer extends Item<CostumerProps> {
         this.touch();
     }
 
-    get password() {
-        return this.props.data.password;
-    }
-
-    set password(password: string) {
-        this.props.data.password = password;
-        this.touch();
-    }
-
     get photoPath() {
         return this.props.data.photoPath;
     }
@@ -71,15 +62,32 @@ export class Costumer extends Item<CostumerProps> {
         this.props.updatedAt = new Date();
     }
 
-    toDynamoItem(): Record<string, unknown> {
+    toDynamoItem(): Record<string, AttributeValue> {
         const { sk, pk } = this.keys();
         return {
-            PK: { S: pk },
-            SK: { S: sk },
+            pk: { S: pk },
+            sk: { S: sk },
             data: { S: JSON.stringify(this.props.data) },
-            createdAt: { S: this.props.createdAt?.toISOString() },
-            updatedAt: { S: this.props.updatedAt?.toISOString() },
+            createdAt: {
+                S:
+                    this.props.createdAt?.toISOString() ??
+                    new Date().toISOString(),
+            },
+            updatedAt: {
+                S:
+                    this.props.updatedAt?.toISOString() ??
+                    new Date().toISOString(),
+            },
         };
+    }
+
+    static fromDynamoItem(item: Record<string, AttributeValue>): Costumer {
+        const { data, createdAt, updatedAt } = item;
+        return new Costumer({
+            data: JSON.parse(data.S ?? '{}'),
+            createdAt: new Date(createdAt.S ?? new Date().toISOString()),
+            updatedAt: new Date(updatedAt.S ?? new Date().toISOString()),
+        });
     }
 
     static create(props: CostumerProps) {
